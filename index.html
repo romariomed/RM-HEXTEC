@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Galería Dark – Home | Foto1 | Foto2 | Foto3 | Foto4 | Foto5 | Foto6</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- AOS (on scroll animations) -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <!-- Swiper -->
+  <link href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" rel="stylesheet" />
+  <!-- Lightbox2 -->
+  <link href="https://cdn.jsdelivr.net/npm/lightbox2@2.11.4/dist/css/lightbox.min.css" rel="stylesheet" />
+  <!-- Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    :root{ --bg:#0b0f14; --bg-soft:#111720; --card:#151b24; --muted:#94a3b8; --text:#e2e8f0; --accent:#06b6d4; --accent-2:#a78bfa; }
+    html,body{background:var(--bg); color:var(--text);}    
+    a{color:var(--accent)} a:hover{color:#67e8f9}
+    .navbar{background:linear-gradient(180deg,#0b0f14 0%,#0b0f14e6 60%,transparent 100%); backdrop-filter: blur(8px);} 
+    .navbar-toggler{border-color:#334155} .navbar-toggler-icon{filter:invert(1)}
+    .nav-link{color:var(--muted)!important}
+    .nav-link.active,.nav-link:hover{color:var(--accent)!important}
+    .brand-glow{color:#fff; text-shadow:0 0 12px rgba(6,182,212,.45), 0 0 2px rgba(167,139,250,.2)}
+
+    .section{display:none}
+    .section.show{display:block}
+
+    /* Cards Home */
+    .gallery-card{background:linear-gradient(145deg,#0f1520 0%,#121a26 100%); border:1px solid #1e2836; border-radius:18px; overflow:hidden; box-shadow:0 8px 28px rgba(0,0,0,.35)}
+    .gallery-card img{width:100%; height:220px; object-fit:cover; filter:saturate(1.1) contrast(1.05)}
+    .chip{display:inline-flex; align-items:center; gap:.4rem; font-size:.75rem; color:#cbd5e1; background:#0f172a; border:1px solid #1f2937; padding:.3rem .6rem; border-radius:999px}
+
+    /* Foto1 – Masonry/Isotope */
+    .filter-btn{border:1px solid #223044; color:#cbd5e1}
+    .filter-btn.active, .filter-btn:hover{background:var(--accent); color:#001017; border-color:transparent}
+    .grid-item{width:calc(33.333% - 16px); margin:8px; border-radius:14px; overflow:hidden; background:#0d1420; border:1px solid #1f2a3a; transition:transform .25s ease, box-shadow .25s}
+    .grid-item img{display:block; width:100%; height:100%; object-fit:cover}
+    .grid-item:hover{transform:translateY(-3px); box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    @media (max-width: 992px){ .grid-item{width:calc(50% - 16px);} }
+    @media (max-width: 576px){ .grid-item{width:calc(100% - 16px);} }
+
+    /* Foto2 – Parallax panels */
+    .parallax-panel{position:relative; height:70vh; display:grid; place-items:center; color:#e2e8f0; text-align:center; overflow:hidden; border-top:1px solid #1e293b; border-bottom:1px solid #1e293b}
+    .parallax-panel .overlay{position:absolute; inset:0; background:radial-gradient(60% 60% at 50% 40%, transparent 0%, rgba(0,0,0,.45) 100%);}
+    .parallax-panel h2{position:relative; z-index:2; font-weight:800; letter-spacing:.03em}
+    .parallax-img{position:absolute; inset:0; width:100%; height:120%; object-fit:cover; filter:brightness(.8)}
+
+    /* Foto3 – Swiper slider */
+    .swiper{width:100%; height:70vh}
+    .swiper-slide{display:flex; align-items:center; justify-content:center; background:var(--bg-soft); border:1px solid #1f2a3a; border-radius:18px; overflow:hidden}
+    .swiper-slide img{width:100%; height:100%; object-fit:cover}
+
+    /* Foto4 – Swiper 3D Coverflow */
+    .coverflow .swiper-slide{background:linear-gradient(180deg,#0e1522,#131c2b); border:1px solid #203045}
+    .coverflow .swiper-slide img{width:100%; height:100%; object-fit:cover; opacity:.95}
+
+    /* Foto5 – Lightbox grid */
+    .lb-grid{display:grid; grid-template-columns:repeat(5, 1fr); gap:12px}
+    .lb-grid a{border-radius:12px; overflow:hidden; border:1px solid #203045; display:block}
+    .lb-grid img{width:100%; height:160px; object-fit:cover; display:block}
+    @media (max-width: 1200px){ .lb-grid{grid-template-columns:repeat(4, 1fr);} }
+    @media (max-width: 992px){ .lb-grid{grid-template-columns:repeat(3, 1fr);} }
+    @media (max-width: 768px){ .lb-grid{grid-template-columns:repeat(2, 1fr);} }
+
+    /* Foto6 – Photo Book (CSS flip) */
+    .book-wrap{position:relative; background:linear-gradient(180deg,#0e1623,#0a0f17); border:1px solid #203045; border-radius:18px; padding:18px}
+    .photobook{position:relative; height:70vh; max-height:720px; min-height:420px; perspective:2000px}
+    .book{position:relative; width:100%; height:100%; border-radius:16px; background:linear-gradient(90deg,#0c131e 0%, #0c131e 50%, #0a1018 50%, #0a1018 100%); box-shadow:inset 0 0 0 1px #1f2a3a, 0 30px 60px rgba(0,0,0,.4); overflow:hidden}
+    .book::after{content:''; position:absolute; left:50%; top:0; bottom:0; width:2px; background:linear-gradient(180deg,#1b2636,#0b111a); opacity:.8}
+    .page{position:absolute; top:0; right:0; width:50%; height:100%; transform-origin:left; transform-style:preserve-3d; transition:transform .9s cubic-bezier(.2,.8,.2,1), box-shadow .9s; border-left:1px solid #1e293b}
+    .page .front,.page .back{position:absolute; inset:0; backface-visibility:hidden; overflow:hidden}
+    .page .front{background:#0c131e}
+    .page .back{background:#0a1018; transform:rotateY(180deg)}
+    .page img{width:100%; height:100%; object-fit:cover}
+    .page.flipped{transform:rotateY(-180deg); box-shadow:-6px 0 24px rgba(0,0,0,.35)}
+    .click-zone{position:absolute; top:0; height:100%; width:50%; z-index:50; cursor:pointer}
+    .click-zone.left{left:0}
+    .click-zone.right{right:0}
+    .click-zone:hover{background:linear-gradient(90deg, rgba(6,182,212,.05), transparent)}
+    @media (max-width:768px){ .photobook{height:60vh} }
+
+    footer{border-top:1px solid #1e293b; background:#0b0f14; color:#94a3b8}
+  /* Foto6 – Mejorado: libro doble página (clic en fotos para navegar) */
+    .book{background:linear-gradient(90deg,#0c131e 0%, #0c131e 50%, #0a1018 50%, #0a1018 100%); border-radius:16px; box-shadow:inset 0 0 0 1px #1f2a3a, 0 30px 60px rgba(0,0,0,.45);}
+    .book-wrap{position:relative; background:linear-gradient(180deg,#0e1623,#0a0f17); border:1px solid #203045; border-radius:18px; padding:18px}
+    .photobook{position:relative; height:70vh; max-height:720px; min-height:420px; perspective:2000px}
+    .book::after{content:''; position:absolute; left:50%; top:0; bottom:0; width:3px; background:linear-gradient(180deg,#1b2636,#0b111a);}    
+    .static-left{position:absolute; top:0; left:0; width:50%; height:100%; overflow:hidden; border-right:1px solid #1e293b;}
+    .static-left img{width:100%; height:100%; object-fit:cover}
+    .page{position:absolute; top:0; right:0; width:50%; height:100%; transform-origin:left; transform-style:preserve-3d; transition:transform .9s cubic-bezier(.2,.8,.2,1), box-shadow .9s; border-left:1px solid #1e293b}
+    .page .front,.page .back{position:absolute; inset:0; backface-visibility:hidden; overflow:hidden}
+    .page .front{background:#0c131e}
+    .page .back{background:#0a1018; transform:rotateY(180deg)}
+    .page img{width:100%; height:100%; object-fit:cover}
+    .page.flipped{transform:rotateY(-180deg); box-shadow:-6px 0 24px rgba(0,0,0,.35)}
+    .nums{position:absolute; bottom:14px; left:0; right:0; z-index:60; pointer-events:none; font-weight:600; font-size:.9rem; color:#cdbf9a; text-shadow:0 1px 0 rgba(0,0,0,.5)}
+    .nums .num-left{position:absolute; left:28px}
+    .nums .num-right{position:absolute; right:28px}
+    .click-zone{position:absolute; top:0; height:100%; width:50%; z-index:50; cursor:pointer}
+    .click-zone.left{left:0}
+    .click-zone.right{right:0}
+    .click-zone:hover{background:linear-gradient(90deg, rgba(6,182,212,.05), transparent)}
+    @media (max-width:768px){ .photobook{height:60vh} }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+      <a class="navbar-brand brand-glow fw-bold" href="#" data-target="#homeSection"><i class="bi bi-braces-asterisk me-2"></i>Galería Dark</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav ms-auto gap-2">
+          <li class="nav-item"><a class="nav-link active" href="#" data-target="#homeSection">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-target="#foto1Section">Foto1</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-target="#foto2Section">Foto2</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-target="#foto3Section">Foto3</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-target="#foto4Section">Foto4</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-target="#foto5Section">Foto5</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" data-target="#foto6Section">Foto6</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="pt-5 mt-4">
+
+    <!-- HOME -->
+    <section id="homeSection" class="section show">
+      <div class="container py-5">
+        <div class="row align-items-center g-4">
+          <div class="col-lg-6" data-aos="fade-right">
+            <h1 class="display-5 fw-extrabold">Modo <span style="color:var(--accent)">Dark</span> para Programadores</h1>
+            <p class="lead text-secondary mt-3">Explora 6 experiencias de galería: Masonry/Isotope, Parallax, Slider, 3D Coverflow, Lightbox y un <strong>Libro de Fotos</strong> interactivo.</p>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+              <span class="chip"><i class="bi bi-bootstrap"></i> Bootstrap 5</span>
+              <span class="chip"><i class="bi bi-lightning"></i> jQuery</span>
+              <span class="chip"><i class="bi bi-sliders"></i> Swiper</span>
+              <span class="chip"><i class="bi bi-images"></i> Isotope</span>
+              <span class="chip"><i class="bi bi-grid-3x3-gap"></i> AOS</span>
+              <span class="chip"><i class="bi bi-eye"></i> Lightbox</span>
+            </div>
+          </div>
+          <div class="col-lg-6" data-aos="fade-left">
+            <div class="row g-3">
+              <!-- 6 tilted cards -->
+              <div class="col-6">
+                <div class="gallery-card" data-tilt data-tilt-max="8" data-tilt-speed="400">
+                  <img src="https://picsum.photos/seed/a1/640/420" alt="img" />
+                  <div class="p-3">
+                    <div class="small text-secondary">Colección</div>
+                    <div class="fw-semibold">Abstract 01</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="gallery-card" data-tilt data-tilt-max="8">
+                  <img src="https://picsum.photos/seed/a2/640/420" alt="img" />
+                  <div class="p-3">
+                    <div class="small text-secondary">Paisaje</div>
+                    <div class="fw-semibold">Montañas</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="gallery-card" data-tilt data-tilt-glare data-tilt-max-glare=".2">
+                  <img src="https://picsum.photos/seed/a3/640/420" alt="img" />
+                  <div class="p-3">
+                    <div class="small text-secondary">Urbano</div>
+                    <div class="fw-semibold">Ciudad Nocturna</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="gallery-card" data-tilt>
+                  <img src="https://picsum.photos/seed/a4/640/420" alt="img" />
+                  <div class="p-3">
+                    <div class="small text-secondary">Naturaleza</div>
+                    <div class="fw-semibold">Bosque</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="gallery-card" data-tilt>
+                  <img src="https://picsum.photos/seed/a5/640/420" alt="img" />
+                  <div class="p-3">
+                    <div class="small text-secondary">Arte</div>
+                    <div class="fw-semibold">Neón</div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="gallery-card" data-tilt>
+                  <img src="https://picsum.photos/seed/a6/640/420" alt="img" />
+                  <div class="p-3">
+                    <div class="small text-secondary">Minimal</div>
+                    <div class="fw-semibold">Geometría</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOTO1 – Isotope Masonry + filtros -->
+    <section id="foto1Section" class="section">
+      <div class="container py-5">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+          <h2 class="mb-0">Foto1 · Masonry / Filtros</h2>
+          <div class="btn-group" role="group" aria-label="Filtros">
+            <button class="btn btn-sm filter-btn active" data-filter="*">Todo</button>
+            <button class="btn btn-sm filter-btn" data-filter=".nature">Naturaleza</button>
+            <button class="btn btn-sm filter-btn" data-filter=".city">Ciudad</button>
+            <button class="btn btn-sm filter-btn" data-filter=".people">Personas</button>
+          </div>
+        </div>
+        <div id="isoGrid" class="d-flex flex-wrap" data-aos="fade-up">
+          <!-- 12 items -->
+          <div class="grid-item nature"><img src="https://picsum.photos/seed/n1/600/800" alt="" /></div>
+          <div class="grid-item city"><img src="https://picsum.photos/seed/c1/800/600" alt="" /></div>
+          <div class="grid-item nature"><img src="https://picsum.photos/seed/n2/600/700" alt="" /></div>
+          <div class="grid-item people"><img src="https://picsum.photos/seed/p1/600/600" alt="" /></div>
+          <div class="grid-item city"><img src="https://picsum.photos/seed/c2/700/800" alt="" /></div>
+          <div class="grid-item nature"><img src="https://picsum.photos/seed/n3/600/650" alt="" /></div>
+          <div class="grid-item city"><img src="https://picsum.photos/seed/c3/600/900" alt="" /></div>
+          <div class="grid-item people"><img src="https://picsum.photos/seed/p2/700/700" alt="" /></div>
+          <div class="grid-item nature"><img src="https://picsum.photos/seed/n4/700/600" alt="" /></div>
+          <div class="grid-item people"><img src="https://picsum.photos/seed/p3/800/600" alt="" /></div>
+          <div class="grid-item city"><img src="https://picsum.photos/seed/c4/600/700" alt="" /></div>
+          <div class="grid-item nature"><img src="https://picsum.photos/seed/n5/600/600" alt="" /></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOTO2 – Parallax / Rellax -->
+    <section id="foto2Section" class="section">
+      <div class="parallax-panel">
+        <img class="parallax-img rellax" data-rellax-speed="-3" src="https://picsum.photos/seed/para1/1600/1200" alt="" />
+        <div class="overlay"></div>
+        <h2 data-aos="zoom-in">Parallax · Capa Profunda</h2>
+      </div>
+      <div class="parallax-panel">
+        <img class="parallax-img rellax" data-rellax-speed="-2" src="https://picsum.photos/seed/para2/1600/1200" alt="" />
+        <div class="overlay"></div>
+        <h2 data-aos="zoom-in">Movimiento Suave</h2>
+      </div>
+      <div class="parallax-panel">
+        <img class="parallax-img rellax" data-rellax-speed="-4" src="https://picsum.photos/seed/para3/1600/1200" alt="" />
+        <div class="overlay"></div>
+        <h2 data-aos="zoom-in">Efecto Cinemático</h2>
+      </div>
+    </section>
+
+    <!-- FOTO3 – Swiper Slider clásico -->
+    <section id="foto3Section" class="section">
+      <div class="container py-5">
+        <h2 class="mb-3">Foto3 · Slider Autoplay</h2>
+        <div class="swiper" id="swiperClassic">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide"><img src="https://picsum.photos/seed/s1/1600/900" alt="" /></div>
+            <div class="swiper-slide"><img src="https://picsum.photos/seed/s2/1600/900" alt="" /></div>
+            <div class="swiper-slide"><img src="https://picsum.photos/seed/s3/1600/900" alt="" /></div>
+            <div class="swiper-slide"><img src="https://picsum.photos/seed/s4/1600/900" alt="" /></div>
+            <div class="swiper-slide"><img src="https://picsum.photos/seed/s5/1600/900" alt="" /></div>
+          </div>
+          <div class="swiper-pagination"></div>
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOTO4 – Swiper 3D Coverflow/Cube -->
+    <section id="foto4Section" class="section">
+      <div class="container py-5">
+        <h2 class="mb-3">Foto4 · 3D Coverflow</h2>
+        <div class="swiper coverflow" id="swiper3D">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide"><img src="https://picsum.photos/seed/cov1/1000/700" alt="" /></div>
+            <div class="swiper-slide"><img src="https://picsum.photos/seed/cov2/1000/700" alt="" /></div>
+            <div class="swiper-slide"><img src="https://picsum.photos/seed/cov3/1000/700" alt="" /></div>
+            <div class="swiper-slide"><img src="https://picsum.photos/seed/cov4/1000/700" alt="" /></div>
+            <div class="swiper-slide"><img src="https://picsum.photos/seed/cov5/1000/700" alt="" /></div>
+          </div>
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOTO5 – Grid + Lightbox2 -->
+    <section id="foto5Section" class="section">
+      <div class="container py-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h2 class="mb-0">Foto5 · Lightbox</h2>
+          <div class="text-secondary small">Click para abrir en modal</div>
+        </div>
+        <div class="lb-grid" data-aos="fade-up">
+          <!-- 12 thumbs -->
+          <a href="https://picsum.photos/seed/lb1/1600/1000" data-lightbox="set1" data-title="Imagen 1"><img src="https://picsum.photos/seed/lb1/400/300" alt="" /></a>
+          <a href="https://picsum.photos/seed/lb2/1600/1000" data-lightbox="set1" data-title="Imagen 2"><img src="https://picsum.photos/seed/lb2/400/300" alt="" /></a>
+          <a href="https://picsum.photos/seed/lb3/1600/1000" data-lightbox="set1" data-title="Imagen 3"><img src="https://picsum.photos/seed/lb3/400/300" alt="" /></a>
+          <a href="https://picsum.photos/seed/lb4/1600/1000" data-lightbox="set1" data-title="Imagen 4"><img src="https://picsum.photos/seed/lb4/400/300" alt="" /></a>
+          <a href="https://picsum.photos/seed/lb5/1600/1000" data-lightbox="set1" data-title="Imagen 5"><img src="https://picsum.photos/seed/lb5/400/300" alt="" /></a>
+          <a href="https://picsum.photos/seed/lb6/1600/1000" data-lightbox="set1" data-title="Imagen 6"><img src="https://picsum.photos/seed/lb6/400/300" alt="" /></a>
+          <a href="https://picsum.photos/seed/lb7/1600/1000" data-lightbox="set1" data-title="Imagen 7"><img src="https://picsum.photos/seed/lb7/400/300" alt="" /></a>
+          <a href="https://picsum.photos/seed/lb8/1600/1000" data-lightbox="set1" data-title="Imagen 8"><img src="https://picsum.photos/seed/lb8/400/300" alt="" /></a>
+          <a href="https://picsum.photos/seed/lb9/1600/1000" data-lightbox="set1" data-title="Imagen 9"><img src="https://picsum.photos/seed/lb9/400/300" alt="" /></a>
+          <a href="https://picsum.photos/seed/lb10/1600/1000" data-lightbox="set1" data-title="Imagen 10"><img src="https://picsum.photos/seed/lb10/400/300" alt="" /></a>
+          <a href="https://picsum.photos/seed/lb11/1600/1000" data-lightbox="set1" data-title="Imagen 11"><img src="https://picsum.photos/seed/lb11/400/300" alt="" /></a>
+          <a href="https://picsum.photos/seed/lb12/1600/1000" data-lightbox="set1" data-title="Imagen 12"><img src="https://picsum.photos/seed/lb12/400/300" alt="" /></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOTO6 – Libro de Fotos (flip) -->
+    <section id="foto6Section" class="section">
+      <div class="container py-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h2 class="mb-0">Foto6 · Libro de fotos</h2>
+          <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-sm filter-btn prev"><i class="bi bi-chevron-left"></i> Anterior</button>
+            <span class="small text-secondary"><span class="page-idx">1</span> / <span class="page-total">12</span></span>
+            <button class="btn btn-sm filter-btn next">Siguiente <i class="bi bi-chevron-right"></i></button>
+          </div>
+        </div>
+        <div class="book-wrap">
+          <div class="photobook position-relative">
+            <div id="book" class="book">
+              <!-- Página izquierda inicial (estática) -->
+              <div class="static-left"><img src="https://picsum.photos/seed/b1/1200/900" alt="" /></div>
+              <!-- Hojas: FRONT (derecha) es la página par; BACK (al voltear) pasa a ser la izquierda (impar) -->
+              <div class="page">
+                <div class="front"><img src="https://picsum.photos/seed/b2/1200/900" alt="" /></div>
+                <div class="back"><img src="https://picsum.photos/seed/b3/1200/900" alt="" /></div>
+              </div>
+              <div class="page">
+                <div class="front"><img src="https://picsum.photos/seed/b4/1200/900" alt="" /></div>
+                <div class="back"><img src="https://picsum.photos/seed/b5/1200/900" alt="" /></div>
+              </div>
+              <div class="page">
+                <div class="front"><img src="https://picsum.photos/seed/b6/1200/900" alt="" /></div>
+                <div class="back"><img src="https://picsum.photos/seed/b7/1200/900" alt="" /></div>
+              </div>
+              <div class="page">
+                <div class="front"><img src="https://picsum.photos/seed/b8/1200/900" alt="" /></div>
+                <div class="back"><img src="https://picsum.photos/seed/b9/1200/900" alt="" /></div>
+              </div>
+              <div class="page">
+                <div class="front"><img src="https://picsum.photos/seed/b10/1200/900" alt="" /></div>
+                <div class="back"><img src="https://picsum.photos/seed/b11/1200/900" alt="" /></div>
+              </div>
+              <div class="page">
+                <div class="front"><img src="https://picsum.photos/seed/b12/1200/900" alt="" /></div>
+                <div class="back"><img src="https://picsum.photos/seed/b13/1200/900" alt="" /></div>
+              </div>
+              <!-- Numeración por overlay -->
+              <div class="nums"><span class="num-left">1</span><span class="num-right">2</span></div>
+            </div>
+            <div class="click-zone left" title="Anterior"></div>
+            <div class="click-zone right" title="Siguiente"></div>
+          </div>
+          <div class="small text-secondary mt-2"><i class="bi bi-info-circle"></i> Tip: usa las flechas del teclado para pasar de página.</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="py-4 mt-5">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+      <div class="small">© <span id="year"></span> Galería Dark. Hecho con ❤️ por Romario + ChatGPT.</div>
+      <div class="small">Tech: Bootstrap · jQuery · Swiper · Isotope · AOS · Lightbox</div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/isotope-layout@3.0.6/dist/isotope.pkgd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/rellax@1.12.1/rellax.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanilla-tilt@1.8.1/dist/vanilla-tilt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lightbox2@2.11.4/dist/js/lightbox.min.js"></script>
+
+  <script>
+    // Año footer
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // AOS
+    AOS.init({ once:true, duration:700, easing:'ease-out' });
+
+    // --- SPA Navigation (mostrar/ocultar secciones) ---
+    function showSection(id){
+      $('.section').removeClass('show').hide();
+      $(id).fadeIn(150).addClass('show');
+      window.scrollTo({top:0, behavior:'smooth'});
+      // post-show updates
+      if(id === '#foto2Section'){ initRellax(); }
+      if(id === '#foto3Section' && window.swiperClassic){ swiperClassic.update(); }
+      if(id === '#foto4Section' && window.swiper3D){ swiper3D.update(); }
+      if(id === '#foto6Section'){ initPhotobook(true); }
+    }
+    function setActive(link){ $('.nav-link').removeClass('active'); $(link).addClass('active'); }
+    $(document).on('click','[data-target]',function(e){
+      e.preventDefault();
+      const target = $(this).data('target');
+      if(!target) return;
+      showSection(target);
+      setActive(this);
+      $('.navbar-collapse').collapse('hide'); // mobile
+    });
+
+    // FOTO1 – Isotope
+    let iso;
+    function initIsotope(){
+      iso = new Isotope('#isoGrid', { itemSelector: '.grid-item', layoutMode:'masonry', transitionDuration:'0.35s' });
+      $('#foto1Section .filter-btn').on('click', function(){
+        $('#foto1Section .filter-btn').removeClass('active');
+        $(this).addClass('active');
+        const filterVal = $(this).data('filter');
+        iso.arrange({ filter: filterVal });
+      });
+    }
+
+    // FOTO2 – Rellax (parallax)
+    let rellax;
+    function initRellax(){ if(rellax) rellax.destroy(); rellax = new Rellax('.rellax'); }
+
+    // FOTO3 – Swiper clásico
+    let swiperClassic;
+    function initSwiperClassic(){
+      swiperClassic = new Swiper('#swiperClassic', {
+        loop:true,
+        autoplay:{ delay:2200, disableOnInteraction:false },
+        pagination:{ el:'#swiperClassic .swiper-pagination', clickable:true },
+        navigation:{ nextEl:'#swiperClassic .swiper-button-next', prevEl:'#swiperClassic .swiper-button-prev' },
+        keyboard:{enabled:true},
+        effect:'fade',
+        speed:700
+      });
+    }
+
+    // FOTO4 – Swiper 3D Coverflow
+    let swiper3D;
+    function initSwiper3D(){
+      swiper3D = new Swiper('#swiper3D', {
+        effect:'coverflow', grabCursor:true, centeredSlides:true, slidesPerView:'auto', loop:true,
+        coverflowEffect:{ rotate:40, stretch:0, depth:160, modifier:1, slideShadows:true },
+        pagination:{ el:'#foto4Section .swiper-pagination', clickable:true },
+        autoplay:{ delay:2500, disableOnInteraction:false },
+        breakpoints:{ 0:{slidesPerView:1}, 768:{slidesPerView:2}, 1200:{slidesPerView:3} }
+      });
+    }
+
+    // FOTO5 – Lightbox2 options
+    lightbox.option({ 'fadeDuration': 180, 'imageFadeDuration': 180, 'resizeDuration': 180, 'wrapAround': true, 'positionFromTop': 80 })
+
+    // FOTO6 – Photobook (JS)
+    function initPhotobook(forceRebind){
+      const $book = $('#book');
+      if(!$book.length) return;
+      const $pages = $book.find('.page');
+      // Apilar una sola vez
+      if(!$book.data('stacked')){ $pages.each(function(i){ $(this).css('z-index', ($pages.length - i)); }); $book.data('stacked', true); }
+      const totalSides = 1 + $pages.length * 2; // 1 izquierda inicial + pares/dobles de cada hoja
+      const $idx = $('#foto6Section .page-idx');
+      const $totalEl = $('#foto6Section .page-total');
+      $totalEl.text(totalSides);
+
+      function currentLeft(){ const flipped = $book.find('.page.flipped').length; return Math.min(1 + flipped*2, totalSides); }
+      function updateNums(){ const l = currentLeft(); const r = Math.min(l+1, totalSides); $idx.text(l); $book.find('.num-left').text(l); $book.find('.num-right').text(r); }
+
+      function next(){
+        const $n = $book.find('.page').not('.flipped').first();
+        if($n.length){ $n.addClass('flipped'); }
+        else { // reiniciar al final
+          $book.find('.page').removeClass('flipped');
+        }
+        bindClicks();
+        updateNums();
+      }
+      function prev(){
+        const $p = $book.find('.page.flipped').last();
+        if($p.length){ $p.removeClass('flipped'); }
+        bindClicks();
+        updateNums();
+      }
+
+      function bindClicks(){
+        // Foto derecha actual (front) -> siguiente
+        $book.find('.front').css('cursor','default').off('click');
+        const $rf = $book.find('.page').not('.flipped').first().find('.front');
+        if($rf.length){ $rf.css('cursor','pointer').on('click', next); }
+        // Foto izquierda actual (back de la última flipped) o la base -> anterior
+        $book.find('.back').css('cursor','default').off('click');
+        const $lb = $book.find('.page.flipped').last().find('.back');
+        if($lb.length){ $lb.css('cursor','pointer').on('click', prev); $('.static-left').css('cursor','default').off('click'); }
+        else { $('.static-left').css('cursor','pointer').off('click').on('click', prev); }
+      }
+
+      if(forceRebind){
+        $('#foto6Section .next').off('click').on('click', next);
+        $('#foto6Section .prev').off('click').on('click', prev);
+        $('#foto6Section .click-zone.right').off('click').on('click', next);
+        $('#foto6Section .click-zone.left').off('click').on('click', prev);
+        $(document).off('keydown.photobook').on('keydown.photobook', function(e){
+          if(!$('#foto6Section').hasClass('show')) return;
+          if(e.key==='ArrowRight') next();
+          if(e.key==='ArrowLeft') prev();
+        });
+      }
+      bindClicks();
+      updateNums();
+    }
+
+    // Init once DOM ready
+    $(function(){
+      // init libs
+      initIsotope();
+      initRellax();
+      initSwiperClassic();
+      initSwiper3D();
+      initPhotobook(true);
+
+      // If user navigates via hash
+      const hashToId = { '#home':'#homeSection', '#foto1':'#foto1Section', '#foto2':'#foto2Section', '#foto3':'#foto3Section', '#foto4':'#foto4Section', '#foto5':'#foto5Section', '#foto6':'#foto6Section' };
+      if(hashToId[location.hash]){ showSection(hashToId[location.hash]); $(".nav-link[data-target='"+hashToId[location.hash]+"']").addClass('active'); }
+
+      // Tilt cards
+      VanillaTilt.init(document.querySelectorAll('[data-tilt]'), { max:8, speed:400, glare:true, 'max-glare':.15 });
+    });
+  </script>
+</body>
+</html>
